@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\chien\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\chien\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_EasyQuizApi.-117767872.00" t="ExcludeRecursive" />
+    <e p="E:\Bí kíp chân truyền\EasyQuizAPI" t="IncludeFlat">
+      <e p="EasyQuizApi.API" t="IncludeRecursive">
+        <e p="appsettings.Development.json" t="Include" />
+        <e p="appsettings.json" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Controllers" t="Include">
+          <e p="UserController.cs" t="Include" />
+          <e p="ValuesController.cs" t="Include" />
+        </e>
+        <e p="EasyQuizApi.API.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="EasyQuizApi.API.AssemblyInfo.cs" t="Include" />
+              <e p="EasyQuizApi.API.RazorAssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Program.cs" t="Include" />
+        <e p="Properties" t="Include">
+          <e p="launchSettings.json" t="Include" />
+        </e>
+        <e p="Startup.cs" t="Include" />
+        <e p="wwwroot" t="Include" />
+      </e>
+      <e p="EasyQuizApi.Data" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="DbInitializer.cs" t="Include" />
+        <e p="EasyQuizApi.Data.csproj" t="IncludeRecursive" />
+        <e p="EasyQuizDbContext.cs" t="Include" />
+        <e p="Migrations" t="Include">
+          <e p="20200220182634_init db.cs" t="Include" />
+          <e p="20200220182634_init db.Designer.cs" t="Include" />
+          <e p="EasyQuizDbContextModelSnapshot.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="EasyQuizApi.Data.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="RepositoryBase" t="Include">
+          <e p="IEntityBaseRepository.cs" t="Include" />
+          <e p="IRepositories.cs" t="Include" />
+          <e p="IUserRepository.cs" t="Include" />
+        </e>
+        <e p="RepositoryImplement" t="Include">
+          <e p="UserRepository.cs" t="Include" />
+        </e>
+      </e>
+      <e p="EasyQuizApi.Model" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="EasyQuizApi.Model.csproj" t="IncludeRecursive" />
+        <e p="Entities" t="Include">
+          <e p="Account.cs" t="Include" />
+          <e p="CauHoi.cs" t="Include" />
+          <e p="De.cs" t="Include" />
+          <e p="DeCauHoi.cs" t="Include" />
+          <e p="DeThi.cs" t="Include" />
+          <e p="GiaoVien.cs" t="Include" />
+          <e p="GiaoVienMonHoc.cs" t="Include" />
+          <e p="KyThi.cs" t="Include" />
+          <e p="MonHoc.cs" t="Include" />
+          <e p="Option.cs" t="Include" />
+          <e p="Role.cs" t="Include" />
+          <e p="SoanDe.cs" t="Include" />
+        </e>
+        <e p="IEntityBase.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="EasyQuizApi.Model.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="EasyQuizApi.sln" t="IncludeFlat" />
+      <e p="EasyQuizApi.Ultils" t="IncludeRecursive">
+        <e p="AppSettings.cs" t="Include" />
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Dto" t="Include">
+          <e p="UserLogin.cs" t="Include" />
+          <e p="UserLoginResponse.cs" t="Include" />
+        </e>
+        <e p="EasyQuizApi.Share.csproj" t="IncludeRecursive" />
+        <e p="Enums" t="Include">
+          <e p="Status.cs" t="Include" />
+        </e>
+        <e p="Helper" t="Include">
+          <e p="PasswordHelper.cs" t="Include" />
+        </e>
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="netcoreapp2.1" t="Include">
+              <e p="EasyQuizApi.Share.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="packages" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>

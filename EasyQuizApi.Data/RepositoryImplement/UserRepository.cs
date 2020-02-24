@@ -39,7 +39,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 return null;
             }
 
-            //authen success, gen jwt token
+            //authent success, gen jwt token
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appSetting.SecretKey);
             var tokenDescriptor = new SecurityTokenDescriptor()
@@ -54,7 +54,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
             var userResponse = new UserLoginResponse();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             userResponse.Id = user.Id;
-            userResponse.FullName = user.GiaoVien.Name;
+            userResponse.FullName = user.GiaoVien != null ? user.GiaoVien.Name : "";
             userResponse.Token = tokenHandler.WriteToken(token);
             return userResponse;
         }

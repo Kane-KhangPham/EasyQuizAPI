@@ -26,6 +26,7 @@ namespace EasyQuizApi.API
         }
 
         public IConfiguration Configuration { get; }
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -34,9 +35,7 @@ namespace EasyQuizApi.API
             string sqlConnectionString = Configuration["DbConnection:ConnectionString"];
 
             // Database
-            services.AddDbContext<EasyQuizDbContext>(options => {
-                options.UseSqlServer(sqlConnectionString);
-            });
+            services.AddDbContext<EasyQuizDbContext>(options => { options.UseSqlServer(sqlConnectionString); });
 
             //appSetting dependency
             var appSettingSection = Configuration.GetSection("AppSettings");
@@ -45,25 +44,37 @@ namespace EasyQuizApi.API
             // config jwt authent
             var key = Encoding.ASCII.GetBytes(appSettingSection["SecretKey"]);
             services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.RequireHttpsMetadata = false;
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
-                };
-            });
+                    x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(x =>
+                {
+                    x.RequireHttpsMetadata = false;
+                    x.SaveToken = true;
+                    x.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateIssuer = false,
+                        ValidateAudience = false
+                    };
+                });
 
             //DI
             services.AddScoped<IUserRepository, UserRepository>();
+
+            // CORS
+            services.AddCors(options =>
+            {
+                options.AddPolicy(MyAllowSpecificOrigins,
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,7 +86,10 @@ namespace EasyQuizApi.API
             }
 
             app.UseAuthentication();
+            app.UseCors(MyAllowSpecificOrigins);
             app.UseMvc();
+            
+            DbInitializer.Initialize(app.ApplicationServices);
         }
     }
 }

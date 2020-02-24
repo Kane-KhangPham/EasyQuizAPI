@@ -26,7 +26,6 @@ namespace EasyQuizApi.API.Controllers
         [HttpPost("login")]
         public IActionResult Login( UserLogin userLogin )
         {
-            Console.Write("-----" + userLogin.Username + "+++" + userLogin.Password);
             try
             {
                 var user = _userRepository.Authenticate(userLogin.Username, userLogin.Password);
