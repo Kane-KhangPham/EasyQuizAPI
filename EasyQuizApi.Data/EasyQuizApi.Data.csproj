@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\EasyQuizApi.Model\EasyQuizApi.Model.csproj" />
+    <ProjectReference Include="..\EasyQuizApi.Ultils\EasyQuizApi.Share.csproj" />
   </ItemGroup>
 
 </Project>

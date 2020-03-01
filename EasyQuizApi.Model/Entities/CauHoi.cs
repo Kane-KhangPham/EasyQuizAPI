@@ -1,7 +1,5 @@
-﻿using EasyQuizApi.Share.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace EasyQuizApi.Model.Entities
 {

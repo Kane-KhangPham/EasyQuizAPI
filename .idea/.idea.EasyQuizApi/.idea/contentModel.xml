@@ -9,8 +9,8 @@
         <e p="appsettings.json" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Controllers" t="Include">
+          <e p="QuestionController.cs" t="Include" />
           <e p="UserController.cs" t="Include" />
-          <e p="ValuesController.cs" t="Include" />
         </e>
         <e p="EasyQuizApi.API.csproj" t="IncludeRecursive" />
         <e p="obj" t="ExcludeRecursive">
@@ -46,11 +46,11 @@
           </e>
         </e>
         <e p="RepositoryBase" t="Include">
-          <e p="IEntityBaseRepository.cs" t="Include" />
-          <e p="IRepositories.cs" t="Include" />
+          <e p="IQuestionRepository.cs" t="Include" />
           <e p="IUserRepository.cs" t="Include" />
         </e>
         <e p="RepositoryImplement" t="Include">
+          <e p="QuestionRepository.cs" t="Include" />
           <e p="UserRepository.cs" t="Include" />
         </e>
       </e>
@@ -79,21 +79,28 @@
             </e>
           </e>
         </e>
+        <e p="Status.cs" t="Include" />
       </e>
       <e p="EasyQuizApi.sln" t="IncludeFlat" />
       <e p="EasyQuizApi.Ultils" t="IncludeRecursive">
         <e p="AppSettings.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Dto" t="Include">
+          <e p="ListQuestionPageDto.cs" t="Include" />
+          <e p="OptionDto.cs" t="Include" />
+          <e p="QuestionCreateModel.cs" t="Include" />
+          <e p="QuestionListItemDto.cs" t="Include" />
+          <e p="QuestionListReponse.cs" t="Include" />
           <e p="UserLogin.cs" t="Include" />
           <e p="UserLoginResponse.cs" t="Include" />
         </e>
         <e p="EasyQuizApi.Share.csproj" t="IncludeRecursive" />
-        <e p="Enums" t="Include">
-          <e p="Status.cs" t="Include" />
-        </e>
+        <e p="Enums" t="Include" />
         <e p="Helper" t="Include">
           <e p="PasswordHelper.cs" t="Include" />
+        </e>
+        <e p="ModelExtention" t="Include">
+          <e p="QuestionExtention.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">

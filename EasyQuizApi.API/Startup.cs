@@ -63,6 +63,7 @@ namespace EasyQuizApi.API
 
             //DI
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
 
             // CORS
             services.AddCors(options =>

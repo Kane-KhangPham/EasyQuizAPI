@@ -1,8 +1,8 @@
 ﻿using EasyQuizApi.Model.Entities;
-using EasyQuizApi.Share.Helper;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
+using EasyQuizApi.Share.Helper;
 
 namespace EasyQuizApi.Data
 {
