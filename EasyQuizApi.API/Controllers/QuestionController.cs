@@ -37,7 +37,7 @@ namespace EasyQuizApi.API.Controllers
         }
 
         [HttpGet("getListQuestion")]
-        public async Task<IActionResult> GetListQuestion(ListQuestionPageDto data)
+        public async Task<IActionResult> GetListQuestion([FromQuery]ListQuestionPageDto data)
         {
             try
             {
