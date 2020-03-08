@@ -49,5 +49,19 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
+        
+        [HttpGet("getListMonHocLookup")]
+        public async Task<IActionResult> getListMonHoc()
+        {
+            try
+            {
+                var result = await _questionRepository.GetListSubjectLookup();
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

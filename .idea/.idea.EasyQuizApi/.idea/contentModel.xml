@@ -91,6 +91,7 @@
           <e p="QuestionCreateModel.cs" t="Include" />
           <e p="QuestionListItemDto.cs" t="Include" />
           <e p="QuestionListReponse.cs" t="Include" />
+          <e p="SubjectLookupDto.cs" t="Include" />
           <e p="UserLogin.cs" t="Include" />
           <e p="UserLoginResponse.cs" t="Include" />
         </e>

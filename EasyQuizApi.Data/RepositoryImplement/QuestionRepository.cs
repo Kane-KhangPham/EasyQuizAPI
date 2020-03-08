@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using EasyQuizApi.Data.RepositoryBase;
@@ -49,6 +50,16 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     }).ToList()
                 }).ToList();
             return Task.FromResult(result);
+        }
+
+        public Task<List<SubjectLookupDto>> GetListSubjectLookup()
+        {
+            var result = _dbContext.MonHocs.Select(item => new SubjectLookupDto()
+            {
+                Id = item.Id,
+                Value = item.Name
+            }).ToListAsync();
+            return result;
         }
     }
 }

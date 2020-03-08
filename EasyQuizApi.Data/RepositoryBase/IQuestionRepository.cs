@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using EasyQuizApi.Share.Dto;
 
 namespace EasyQuizApi.Data.RepositoryBase
@@ -7,5 +8,6 @@ namespace EasyQuizApi.Data.RepositoryBase
     {
         Task<int> CreateQuestion(QuestionCreateModel data);
         Task<QuestionListReponse> GetListQuestion(ListQuestionPageDto data);
+        Task<List<SubjectLookupDto>> GetListSubjectLookup();
     }
 }
