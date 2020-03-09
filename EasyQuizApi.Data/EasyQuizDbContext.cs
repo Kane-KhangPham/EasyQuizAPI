@@ -70,6 +70,11 @@ namespace EasyQuizApi.Data
                 .HasOne(d => d.MonHoc)
                 .WithMany(c => c.GiaoVienMonHocs)
                 .HasForeignKey(d => d.MonHocId);
+
+            modelBuilder.Entity<Option>()
+                .HasOne(o => o.CauHoi)
+                .WithMany(q => q.Options)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

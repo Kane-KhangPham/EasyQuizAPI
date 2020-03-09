@@ -9,5 +9,8 @@ namespace EasyQuizApi.Data.RepositoryBase
         Task<int> CreateQuestion(QuestionCreateModel data);
         Task<QuestionListReponse> GetListQuestion(ListQuestionPageDto data);
         Task<List<SubjectLookupDto>> GetListSubjectLookup();
+
+        int DeleteQuestion(int questionId);
+        void EditQuestion(QuestionEditDto data);
     }
 }

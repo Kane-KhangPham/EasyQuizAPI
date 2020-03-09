@@ -6,7 +6,7 @@ namespace EasyQuizApi.Share.Dto
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public int MonHocId { get; set; }
+        public string MonHoc { get; set; }
         public List<OptionDto> Options { get; set; }
     }
 }

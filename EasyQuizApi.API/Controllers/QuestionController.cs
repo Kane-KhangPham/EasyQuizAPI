@@ -63,5 +63,48 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
+
+        [HttpDelete("deleteQuestion/{questionId}")]
+        public async Task<IActionResult> DeleteQuestion(int questionId)
+        {
+            var result = new ResponseBase();
+            try
+            {
+                var status = _questionRepository.DeleteQuestion(questionId);
+                if (status == 0)
+                {
+                    result.Success = false;
+                    result.Message = "Câu hỏi đã được sủ dụng để tạo đề thi, không thể xóa";
+                    return Ok(result);
+                }
+
+                if (status == -1)
+                {
+                    result.Success = false;
+                    result.Message = "Không tìm thấy câu hỏi cần xóa";
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Lỗi server");
+            }
+            result.Success = true;
+
+            return Ok(result);
+        }
+        
+        [HttpPost("updateQuestion")]
+        public async Task<IActionResult> UpdateQuestion(QuestionEditDto data)
+        {
+            try
+            {
+                 _questionRepository.EditQuestion(data);
+                return Ok();
+            } catch (Exception ex)
+            {
+                return BadRequest();
+            }
+        }
     }
 }

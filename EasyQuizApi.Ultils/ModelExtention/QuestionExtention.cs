@@ -41,7 +41,7 @@ namespace EasyQuizApi.Share.ModelExtention
             };
             cauHoi.CreatedDate = DateTime.Now;
             cauHoi.GiaoVienId = 1;
-            cauHoi.MonHocId = 1;
+            cauHoi.MonHocId = source.MonHocId;
             cauHoi.Status = Status.GuiDuyet;
         }
     }
