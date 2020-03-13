@@ -12,6 +12,10 @@ namespace EasyQuizApi.Model.Entities
         public Status Status { get; set; }
         public int KyThiId { get; set; }
 
+        public int LopId { get; set; }
+
+        public Lop Lop { get; set; }
+
         public KyThi KyThi { get; set; }
         public MonHoc MonHoc { get; set; }
         public ICollection<SoanDe> SoanDes { get; set; }

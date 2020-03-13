@@ -4,11 +4,11 @@ using System.Text;
 
 namespace EasyQuizApi.Model.Entities
 {
-    public class KyThi : IEntityBase
+    public class Lop : IEntityBase
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public bool DeletedStatus { get; set; }
 
-        public ICollection<DeThi> DeThi { get; set; }
     }
 }
