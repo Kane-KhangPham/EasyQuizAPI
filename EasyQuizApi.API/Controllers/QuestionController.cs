@@ -1,43 +1,52 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using EasyQuizApi.Data.RepositoryBase;
 using EasyQuizApi.Share.Dto;
+using iTextSharp.text;
+using iTextSharp.text.html;
+using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 namespace EasyQuizApi.API.Controllers
 {
     // [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class QuestionController: ControllerBase
+    public class QuestionController : ControllerBase
     {
         private readonly IQuestionRepository _questionRepository;
+
         public QuestionController(IQuestionRepository questionRepository)
         {
             _questionRepository = questionRepository;
         }
-        
+
         [HttpPost("createQuestion")]
-        public async Task<IActionResult> CreateQuestion( QuestionCreateModel data)
+        public async Task<IActionResult> CreateQuestion(QuestionCreateModel data)
         {
             try
             {
-                var createdId = await  _questionRepository.CreateQuestion(data);
+                var createdId = await _questionRepository.CreateQuestion(data);
                 if (createdId == 0)
                 {
                     return BadRequest();
                 }
 
                 return Ok();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest();
             }
         }
 
         [HttpGet("getListQuestion")]
-        public async Task<IActionResult> GetListQuestion([FromQuery]ListQuestionPageDto data)
+        public async Task<IActionResult> GetListQuestion([FromQuery] ListQuestionPageDto data)
         {
             try
             {
@@ -49,7 +58,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpGet("getListMonHocLookup")]
         public async Task<IActionResult> getListMonHoc()
         {
@@ -89,19 +98,21 @@ namespace EasyQuizApi.API.Controllers
             {
                 return BadRequest("Lỗi server");
             }
+
             result.Success = true;
 
             return Ok(result);
         }
-        
+
         [HttpPost("updateQuestion")]
         public async Task<IActionResult> UpdateQuestion(QuestionEditDto data)
         {
             try
             {
-                 _questionRepository.EditQuestion(data);
+                _questionRepository.EditQuestion(data);
                 return Ok();
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 return BadRequest();
             }

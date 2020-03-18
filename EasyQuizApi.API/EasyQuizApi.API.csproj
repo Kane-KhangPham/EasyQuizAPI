@@ -9,6 +9,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="itext7.font-asian" Version="7.1.10" />
+    <PackageReference Include="iTextSharp-LGPL" Version="4.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.1" />

@@ -15,7 +15,7 @@ namespace EasyQuizApi.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.1.14-servicing-32113")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -189,7 +189,7 @@ namespace EasyQuizApi.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lop");
+                    b.ToTable("Lops");
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.MonHoc", b =>

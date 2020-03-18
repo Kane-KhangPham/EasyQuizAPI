@@ -64,6 +64,7 @@ namespace EasyQuizApi.API
             //DI
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<IDeThiRepository, DeThiRepository>();
 
             // CORS
             services.AddCors(options =>
@@ -73,6 +74,7 @@ namespace EasyQuizApi.API
                     {
                         builder.WithOrigins("http://localhost:4200")
                             .AllowAnyHeader()
+                            .AllowAnyOrigin()
                             .AllowAnyMethod();
                     });
             });
@@ -89,6 +91,7 @@ namespace EasyQuizApi.API
             app.UseAuthentication();
             app.UseCors(MyAllowSpecificOrigins);
             app.UseMvc();
+            app.UseStaticFiles();
             
             DbInitializer.Initialize(app.ApplicationServices);
         }

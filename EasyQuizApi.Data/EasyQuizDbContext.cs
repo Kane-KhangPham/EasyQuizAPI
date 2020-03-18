@@ -24,6 +24,8 @@ namespace EasyQuizApi.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<SoanDe> SoanDes { get; set; }
 
+        public DbSet<Lop> Lops { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
