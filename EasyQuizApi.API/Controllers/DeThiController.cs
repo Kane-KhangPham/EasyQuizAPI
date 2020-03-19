@@ -65,6 +65,20 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest(ex);
             }
         }
+        
+        [HttpGet("getListMonHoc")]
+        public async Task<IActionResult> GetListMonHoc(string filter)
+        {
+            try
+            {
+                var result = await _deThiRepository.GetListMonHoc(filter);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         [HttpPost("viewDeThi1")]
         public  ActionResult ViewDeThi(JObject data)

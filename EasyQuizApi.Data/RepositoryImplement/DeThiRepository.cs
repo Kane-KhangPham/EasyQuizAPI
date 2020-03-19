@@ -24,6 +24,16 @@ namespace EasyQuizApi.Data.RepositoryImplement
             return Task.FromResult(data);
         }
 
+        public Task<List<ObjectReference>> GetListMonHoc(string filter)
+        {
+            var data = _dbContext.MonHocs.Where(x => x.Name.Contains(filter)).Select(x => new ObjectReference()
+            {
+                Value = x.Name,
+                Id = x.Id
+            }).ToList();
+            return Task.FromResult(data);
+        }
+
         public Task<List<ObjectReference>> GetListLopHoc()
         {
             var data = _dbContext.Lops.Select(x => new ObjectReference()
