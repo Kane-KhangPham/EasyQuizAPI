@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 
 namespace EasyQuizApi.Model.Entities
@@ -11,6 +12,7 @@ namespace EasyQuizApi.Model.Entities
         public int ThoiGian { get; set; }
         public Status Status { get; set; }
         public int KyThiId { get; set; }
+        public DateTime NgayThi { get; set; }
 
         public int LopId { get; set; }
 

@@ -45,6 +45,8 @@
           <e p="20200313074357_Update_Table.Designer.cs" t="Include" />
           <e p="20200313152122_Update_Table1.cs" t="Include" />
           <e p="20200313152122_Update_Table1.Designer.cs" t="Include" />
+          <e p="20200322123448_UpdateTableDeThi.cs" t="Include" />
+          <e p="20200322123448_UpdateTableDeThi.Designer.cs" t="Include" />
           <e p="EasyQuizDbContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
@@ -98,6 +100,7 @@
         <e p="AppSettings.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Dto" t="Include">
+          <e p="DeThiNewDto.cs" t="Include" />
           <e p="ListQuestionPageDto.cs" t="Include" />
           <e p="ObjectReference.cs" t="Include" />
           <e p="OptionDto.cs" t="Include" />
@@ -112,7 +115,9 @@
           <e p="UserLoginResponse.cs" t="Include" />
         </e>
         <e p="EasyQuizApi.Share.csproj" t="IncludeRecursive" />
-        <e p="Enums" t="Include" />
+        <e p="Enums" t="Include">
+          <e p="KieuDanTrang.cs" t="Include" />
+        </e>
         <e p="Helper" t="Include">
           <e p="PasswordHelper.cs" t="Include" />
         </e>

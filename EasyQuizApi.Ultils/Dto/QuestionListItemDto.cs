@@ -8,5 +8,6 @@ namespace EasyQuizApi.Share.Dto
         public string Content { get; set; }
         public string MonHoc { get; set; }
         public List<OptionDto> Options { get; set; }
+        public string DapAn { get; set; }
     }
 }

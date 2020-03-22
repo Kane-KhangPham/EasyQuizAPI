@@ -12,8 +12,4 @@
     <ProjectReference Include="..\EasyQuizApi.Model\EasyQuizApi.Model.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Enums" />
-  </ItemGroup>
-
 </Project>
