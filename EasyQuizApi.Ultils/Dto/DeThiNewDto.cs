@@ -20,4 +20,16 @@ namespace EasyQuizApi.Share.Dto
         public List<QuestionListItemDto> CauHois { get; set; }
         public KieuDanTrang KieuDanTrang { get; set; }
     }
+
+    public class DeThiPdfDto
+    {
+        public string HocPhan { get; set; }
+        public string KyThi { get; set; }
+        public string LopThi { get; set; }
+        public int ThoiGianThi { get; set; }
+        public DateTime NgayThi { get; set; }
+        public string MaDe { get; set; }
+        public List<QuestionListItemDto> CauHois { get; set; }
+        public KieuDanTrang KieuDanTrang { get; set; }
+    }
 }

@@ -13,6 +13,7 @@ using iTextSharp.text.pdf;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System.Globalization;
 
 namespace EasyQuizApi.API.Controllers
 {
@@ -130,7 +131,7 @@ namespace EasyQuizApi.API.Controllers
             vm.MonHocId = data.SelectToken("monHoc.id").Value<int>();
             vm.LopId = data.SelectToken("lopHoc.id").Value<int>();
             vm.SoCau = data.SelectToken("soCau").Value<int>();
-            vm.ThoiGian = data.SelectToken("soCau").Value<int>();
+            vm.ThoiGian = data.SelectToken("thoiGian").Value<int>();
             vm.Status = Status.GuiDuyet;
             vm.NgayThi = data.SelectToken("ngayThi").Value<DateTime>();
             vm.GiaoVienId = 1;
@@ -146,13 +147,25 @@ namespace EasyQuizApi.API.Controllers
         [HttpPost("viewDeThi1")]
         public  ActionResult ViewDeThi([FromBody]JObject data)
         {
-            var vm = MappingDeThiDto(data);
+            var vm = new DeThiPdfDto();
+            vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+            vm.HocPhan = data.SelectToken("monHoc.value").Value<string>();
+            vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+            vm.ThoiGianThi = data.SelectToken("thoiGian").Value<int>();
+            var ngayThi = data.SelectToken("ngayThi").Value<DateTime>();
+            vm.NgayThi = ngayThi;
+            vm.KyThi = data.SelectToken("kyThi.value").Value<string>() + ", "  + ngayThi.Year.ToString();
+            vm.CauHois =
+                JsonConvert.DeserializeObject<List<QuestionListItemDto>>(data.SelectToken("cauHois").ToString());
+            vm.KieuDanTrang = data.SelectToken("kieuDanTrang") != null
+                ? data.SelectToken("kieuDanTrang").Value<KieuDanTrang>()
+                : KieuDanTrang.FullPage;
             var bytes = CreatePdfStream(vm);
             var memory = new MemoryStream(bytes) {Position = 0};
             return new FileStreamResult(memory, new MediaTypeHeaderValue("application/octet-stream"));
         }
 
-        private byte[] CreatePdfStream(DeThiNewDto data)
+        private byte[] CreatePdfStream(DeThiPdfDto data)
         {
             // ========================= General config ===================================
             var pdfDoc = new Document(PageSize.A4, 20, 20, 20, 20);
@@ -161,11 +174,11 @@ namespace EasyQuizApi.API.Controllers
             pdfDoc.Open();
 
             // ===================== Header ==============================================
-            var headerTable = CreateHeader();
+            var headerTable = CreateHeader(data);
             pdfDoc.Add(headerTable);
 
             // ===================== Section 2: Đáp án ========================================= 
-            CreateDapAnSection(pdfDoc);
+            CreateDapAnSection(pdfDoc, data.CauHois.Count);
 
             // =================== Body ======================================
             CreateDeThiBody(pdfDoc, data.CauHois, data.KieuDanTrang);
@@ -173,7 +186,7 @@ namespace EasyQuizApi.API.Controllers
             return streamResult.GetBuffer();
         }
         
-        private PdfPTable CreateHeader()
+        private PdfPTable CreateHeader(DeThiPdfDto vm)
         {
             PdfPTable headertable = new PdfPTable(3);
             headertable.HorizontalAlignment = 0;
@@ -196,9 +209,9 @@ namespace EasyQuizApi.API.Controllers
                 headertable.DefaultCell.Border = Rectangle.NO_BORDER;
 
                 PdfPCell cell11 = new PdfPCell(new Phrase("Học phần:", _generalFont));
-                PdfPCell cell12 = new PdfPCell(new Phrase("Tin học đại cương", _generalFontBold));
+                PdfPCell cell12 = new PdfPCell(new Phrase(vm.HocPhan, _generalFontBold));
                 PdfPCell cell13 = new PdfPCell(new Phrase("Kì thi:", _generalFont));
-                PdfPCell cell14 = new PdfPCell(new Phrase("Giữa kì, 2020", _generalFont));
+                PdfPCell cell14 = new PdfPCell(new Phrase(vm.KyThi, _generalFont));
  
                 PdfPCell cell21 = new PdfPCell(new Phrase("Lớp thi:", _generalFont));
                 PdfPCell cell22 = new PdfPCell(new Phrase("...................................................", _generalFont));
@@ -246,8 +259,8 @@ namespace EasyQuizApi.API.Controllers
                 emb.HorizontalAlignment = 0;
                 emb.WidthPercentage = 100;
                 emb.DefaultCell.Border = Rectangle.NO_BORDER;
-                PdfPCell cell1 = new PdfPCell(new Paragraph("Thời gian làm bài: 20 phút", _generalFont));
-                PdfPCell cell2 = new PdfPCell(new Phrase("Ngày thi: 12/02/2020", _generalFont));
+                PdfPCell cell1 = new PdfPCell(new Paragraph($"Thời gian làm bài: {vm.ThoiGianThi} phút", _generalFont));
+                PdfPCell cell2 = new PdfPCell(new Phrase($"Ngày thi: {vm.NgayThi.ToString("dd/M/yyyy", CultureInfo.InvariantCulture)}", _generalFont));
                 cell1.Border = Rectangle.NO_BORDER;
                 cell2.Border = Rectangle.NO_BORDER;
                 cell2.HorizontalAlignment = Element.ALIGN_CENTER;
@@ -277,7 +290,7 @@ namespace EasyQuizApi.API.Controllers
             return headertable;
         }
         
-         private void CreateDapAnSection(Document pdfDoc)
+         private void CreateDapAnSection(Document pdfDoc, int soCauHoi)
         {
             PdfPTable dapAnSection = new PdfPTable(1);
             dapAnSection.WidthPercentage = 100;
@@ -294,7 +307,8 @@ namespace EasyQuizApi.API.Controllers
 
             // =========  Grid đáp án ===========================================
             PdfPTable dapAnGridTable = new PdfPTable(16);
-            for(int i = 0; i < 3; i++)
+            int rows = (int)Math.Ceiling(soCauHoi * 1f / 16);
+            for (int i = 0; i < rows; i++)
             {
                 PdfPCell cell;
                 for(int j = 0; j < 16; j++)
@@ -382,7 +396,7 @@ namespace EasyQuizApi.API.Controllers
                     {
                         key.SetBackground(_answerColor);
                     }
-                    Chunk content = new Chunk($" .{question.Options[0]} \n", _generalFont);
+                    Chunk content = new Chunk($" .{question.Options[0].Content} \n", _generalFont);
                     option.Add(key);
                     option.Add(content);
 
@@ -397,7 +411,7 @@ namespace EasyQuizApi.API.Controllers
                     {
                         key.SetBackground(_answerColor);
                     }
-                    Chunk content = new Chunk($" .{question.Options[1]} \n", _generalFont);
+                    Chunk content = new Chunk($" .{question.Options[1].Content} \n", _generalFont);
                     option.Add(key);
                     option.Add(content);
 
@@ -412,7 +426,7 @@ namespace EasyQuizApi.API.Controllers
                     {
                         key.SetBackground(_answerColor);
                     }
-                    Chunk content = new Chunk($" .{question.Options[2]} \n", _generalFont);
+                    Chunk content = new Chunk($" .{question.Options[2].Content} \n", _generalFont);
                     option.Add(key);
                     option.Add(content);
 
@@ -427,7 +441,7 @@ namespace EasyQuizApi.API.Controllers
                     {
                         key.SetBackground(_answerColor);
                     }
-                    Chunk content = new Chunk($" .{question.Options[3]}", _generalFont);
+                    Chunk content = new Chunk($" .{question.Options[3].Content}", _generalFont);
                     option.Add(key);
                     option.Add(content);
 
