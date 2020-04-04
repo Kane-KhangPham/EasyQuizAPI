@@ -5,6 +5,6 @@
         public int Page { get; set; }
         public int PageSize { get; set; }
         public int? MonHoc { get; set; }
-        public int? GiaoVien { get; set; }
+        public string Keyword { get; set; }
     }
 }

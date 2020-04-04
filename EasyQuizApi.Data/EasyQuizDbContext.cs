@@ -77,6 +77,7 @@ namespace EasyQuizApi.Data
                 .HasOne(o => o.CauHoi)
                 .WithMany(q => q.Options)
                 .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

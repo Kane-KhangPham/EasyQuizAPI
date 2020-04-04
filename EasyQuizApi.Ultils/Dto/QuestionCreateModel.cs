@@ -9,5 +9,6 @@
         public string OptionC { get; set; }
         public string OptionD { get; set; }
         public int MonHocId { get; set; }
+        public string DapAn { get; set; }
     }
 }

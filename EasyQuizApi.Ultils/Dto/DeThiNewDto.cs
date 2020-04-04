@@ -31,5 +31,6 @@ namespace EasyQuizApi.Share.Dto
         public string MaDe { get; set; }
         public List<QuestionListItemDto> CauHois { get; set; }
         public KieuDanTrang KieuDanTrang { get; set; }
+        public bool IsContainDapAn { get; set; }
     }
 }

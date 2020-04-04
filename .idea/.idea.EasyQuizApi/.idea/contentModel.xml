@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\chien\.Rider2019.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\chien\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_EasyQuizApi.-117767872.00" t="ExcludeRecursive" />
-    <e p="E:\Bí kíp chân truyền\EasyQuizAPI" t="IncludeFlat">
+    <e p="C:\Users\khangpv\.Rider2019.3\config\scratches" t="IncludeRecursive" />
+    <e p="C:\Users\khangpv\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\khangpv\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_EasyQuizApi.270428683.00" t="ExcludeRecursive" />
+    <e p="D:\dev\DoAnThue\EasyQuizAPI" t="IncludeFlat">
       <e p="EasyQuizApi.API" t="IncludeRecursive">
         <e p="appsettings.Development.json" t="Include" />
         <e p="appsettings.json" t="Include" />
@@ -47,6 +48,8 @@
           <e p="20200313152122_Update_Table1.Designer.cs" t="Include" />
           <e p="20200322123448_UpdateTableDeThi.cs" t="Include" />
           <e p="20200322123448_UpdateTableDeThi.Designer.cs" t="Include" />
+          <e p="20200403180106_SuaDB.cs" t="Include" />
+          <e p="20200403180106_SuaDB.Designer.cs" t="Include" />
           <e p="EasyQuizDbContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
@@ -104,6 +107,7 @@
           <e p="ListQuestionPageDto.cs" t="Include" />
           <e p="ObjectReference.cs" t="Include" />
           <e p="OptionDto.cs" t="Include" />
+          <e p="OptionEditDto.cs" t="Include" />
           <e p="QuestionCreateModel.cs" t="Include" />
           <e p="QuestionDeThiPdfDto.cs" t="Include" />
           <e p="QuestionEditDto.cs" t="Include" />

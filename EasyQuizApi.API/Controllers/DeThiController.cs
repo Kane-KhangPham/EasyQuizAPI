@@ -14,6 +14,7 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Linq.Expressions;
 
 namespace EasyQuizApi.API.Controllers
 {
@@ -28,7 +29,7 @@ namespace EasyQuizApi.API.Controllers
         readonly Font _sectionHeaderFont;
         readonly Font _questionFontBold;
         readonly Color _headerColor = WebColors.GetRGBColor("#c5c5c9");
-        readonly Color _answerColor = WebColors.GetRGBColor("#c5c5c9");
+        readonly Color _answerColor = WebColors.GetRGBColor("#fc0303");
         private readonly IDeThiRepository _deThiRepository;
 
         public DeThiController(IDeThiRepository deThiRepository)
@@ -145,24 +146,32 @@ namespace EasyQuizApi.API.Controllers
         }
 
         [HttpPost("viewDeThi1")]
-        public  ActionResult ViewDeThi([FromBody]JObject data)
+        public ActionResult ViewDeThi([FromBody]JObject data)
         {
-            var vm = new DeThiPdfDto();
-            vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
-            vm.HocPhan = data.SelectToken("monHoc.value").Value<string>();
-            vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
-            vm.ThoiGianThi = data.SelectToken("thoiGian").Value<int>();
-            var ngayThi = data.SelectToken("ngayThi").Value<DateTime>();
-            vm.NgayThi = ngayThi;
-            vm.KyThi = data.SelectToken("kyThi.value").Value<string>() + ", "  + ngayThi.Year.ToString();
-            vm.CauHois =
-                JsonConvert.DeserializeObject<List<QuestionListItemDto>>(data.SelectToken("cauHois").ToString());
-            vm.KieuDanTrang = data.SelectToken("kieuDanTrang") != null
-                ? data.SelectToken("kieuDanTrang").Value<KieuDanTrang>()
-                : KieuDanTrang.FullPage;
-            var bytes = CreatePdfStream(vm);
-            var memory = new MemoryStream(bytes) {Position = 0};
-            return new FileStreamResult(memory, new MediaTypeHeaderValue("application/octet-stream"));
+            try
+            {
+                var vm = new DeThiPdfDto();
+                vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+                vm.HocPhan = data.SelectToken("monHoc.value").Value<string>();
+                vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+                vm.ThoiGianThi = data.SelectToken("thoiGian").Value<int>();
+                var ngayThi = data.SelectToken("ngayThi").Value<DateTime>();
+                vm.NgayThi = ngayThi;
+                vm.KyThi = data.SelectToken("kyThi.value").Value<string>() + ", "  + ngayThi.Year.ToString();
+                vm.CauHois =
+                    JsonConvert.DeserializeObject<List<QuestionListItemDto>>(data.SelectToken("cauHois").ToString());
+                vm.KieuDanTrang = data.SelectToken("kieuDanTrang") != null
+                    ? (KieuDanTrang)Enum.ToObject(typeof(KieuDanTrang) , data.SelectToken("kieuDanTrang").Value<int>())
+                    : KieuDanTrang.FullPage;
+                vm.IsContainDapAn = data.SelectToken("isContainDapAn") != null && data.SelectToken("isContainDapAn").Value<bool>();
+                var bytes = CreatePdfStream(vm);
+                var memory = new MemoryStream(bytes) {Position = 0};
+                return new FileStreamResult(memory, new MediaTypeHeaderValue("application/octet-stream"));
+            }
+            catch
+            {
+            }
+            return BadRequest("Lỗi không thể khởi tạo được nội dung");
         }
 
         private byte[] CreatePdfStream(DeThiPdfDto data)
@@ -181,7 +190,7 @@ namespace EasyQuizApi.API.Controllers
             CreateDapAnSection(pdfDoc, data.CauHois.Count);
 
             // =================== Body ======================================
-            CreateDeThiBody(pdfDoc, data.CauHois, data.KieuDanTrang);
+            CreateDeThiBody(pdfDoc, data.CauHois, data.KieuDanTrang, data.IsContainDapAn);
             pdfDoc.Close();
             return streamResult.GetBuffer();
         }
@@ -377,10 +386,18 @@ namespace EasyQuizApi.API.Controllers
             pdfDoc.Add(dapAnSection);
         }
 
-        private void CreateDeThiBody(Document pdfDoc, List<QuestionListItemDto> data, KieuDanTrang kieuDanTrang)
+         /// <summary>
+         /// 
+         /// </summary>
+         /// <param name="pdfDoc"></param>
+         /// <param name="data"></param>
+         /// <param name="kieuDanTrang"></param>
+         /// <param name="isContainDapAn">  </param>
+        private void CreateDeThiBody(Document pdfDoc, List<QuestionListItemDto> data, KieuDanTrang kieuDanTrang, bool isContainDapAn)
         {
             MultiColumnText columns = new MultiColumnText();
             columns.AddRegularColumns(36f, pdfDoc.PageSize.Width - 36f, 24f, (int)kieuDanTrang);
+            var dapAnKeyMap = new[] {"A", "B", "C", "D"};
             for (int index = 1; index <= data.Count; index++)
             {
                 var question = data[index - 1];
@@ -388,63 +405,20 @@ namespace EasyQuizApi.API.Controllers
                 Phrase questionContent = new Phrase($"Câu {index}: {question.Content} \n", _questionFontBold);
                 blockQuestion.Add(questionContent);
 
+                for (int i = 0; i < question.Options.Count; i++)
                 {
-                    var isAnswer = question.DapAn == "A";
+                    var optionData = question.Options[i];
                     Phrase option = new Phrase();
-                    Chunk key = new Chunk("A", _generalFont);
-                    if (isAnswer)
+                    var dapAnKey = dapAnKeyMap[i];
+                    Chunk key = new Chunk(dapAnKey, _generalFont);
+                    if (optionData.IsDapAn && isContainDapAn)
                     {
                         key.SetBackground(_answerColor);
                     }
-                    Chunk content = new Chunk($" .{question.Options[0].Content} \n", _generalFont);
+                    Chunk content = new Chunk($" .{optionData.Content} \n", _generalFont);
                     option.Add(key);
                     option.Add(content);
-
-                    blockQuestion.Add(option);
-                }
-
-                {
-                    var isAnswer = question.DapAn == "B";
-                    Phrase option = new Phrase();
-                    Chunk key = new Chunk("B", _generalFont);
-                    if (isAnswer)
-                    {
-                        key.SetBackground(_answerColor);
-                    }
-                    Chunk content = new Chunk($" .{question.Options[1].Content} \n", _generalFont);
-                    option.Add(key);
-                    option.Add(content);
-
-                    blockQuestion.Add(option);
-                }
-
-                {
-                    var isAnswer = question.DapAn == "C";
-                    Phrase option = new Phrase();
-                    Chunk key = new Chunk("C", _generalFont);
-                    if (isAnswer)
-                    {
-                        key.SetBackground(_answerColor);
-                    }
-                    Chunk content = new Chunk($" .{question.Options[2].Content} \n", _generalFont);
-                    option.Add(key);
-                    option.Add(content);
-
-                    blockQuestion.Add(option);
-                }
-
-                {
-                    var isAnswer = question.DapAn == "D";
-                    Phrase option = new Phrase();
-                    Chunk key = new Chunk("D", _generalFont);
-                    if (isAnswer)
-                    {
-                        key.SetBackground(_answerColor);
-                    }
-                    Chunk content = new Chunk($" .{question.Options[3].Content}", _generalFont);
-                    option.Add(key);
-                    option.Add(content);
-
+                    
                     blockQuestion.Add(option);
                 }
 

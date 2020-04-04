@@ -17,25 +17,25 @@ namespace EasyQuizApi.Share.ModelExtention
                 new Option()
                 {
                     Content = source.OptionA,
-                    IsAnswer = false,
+                    IsAnswer = source.DapAn == "A",
                     Id = 0
                 },
                 new Option()
                 {
                     Content = source.OptionB,
-                    IsAnswer = false,
+                    IsAnswer = source.DapAn == "B",
                     Id = 0
                 },
                 new Option()
                 {
                     Content = source.OptionC,
-                    IsAnswer = false,
+                    IsAnswer = source.DapAn == "C",
                     Id = 0
                 },
                 new Option()
                 {
                     Content = source.OptionD,
-                    IsAnswer = false,
+                    IsAnswer = source.DapAn == "D",
                     Id = 0
                 }
             };

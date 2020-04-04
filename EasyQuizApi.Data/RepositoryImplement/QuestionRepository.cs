@@ -29,11 +29,11 @@ namespace EasyQuizApi.Data.RepositoryImplement
         {
             var result = new QuestionListReponse();
             var monhocId = data.MonHoc.GetValueOrDefault();
-            var giaovienId = data.GiaoVien.GetValueOrDefault();
+            var keyword = string.IsNullOrEmpty(data.Keyword) ? string.Empty : data.Keyword;
             var query = _dbContext.CauHois.Include(x => x.Options).AsQueryable();
-            if (monhocId > 0 || giaovienId > 0)
+            if (monhocId > 0)
             {
-                query = query.Where(x => x.MonHocId == monhocId || x.GiaoVienId == giaovienId);
+                query = query.Where(x => x.MonHocId == monhocId && x.Content.Contains(keyword));
             }
 
             result.TotalRow = query.Count();
@@ -46,7 +46,8 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     Options = x.Options.Select(o => new OptionDto()
                     {
                         Id = o.Id,
-                        Content = o.Content
+                        Content = o.Content,
+                        IsDapAn =  o. IsAnswer
                     }).ToList()
                 }).ToList();
             return Task.FromResult(result);
@@ -106,6 +107,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         {
                             var dbItem = options[dbItemIndex];
                             dbItem.Content = option.Value;
+                            dbItem.IsAnswer = option.IsDapAn;
                         }
                         else
                         {
@@ -113,7 +115,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                             {
                                 Content = option.Value,
                                 CauHoiId = data.Id,
-                                IsAnswer = false
+                                IsAnswer = option.IsDapAn
                             };
 
                             _dbContext.Options.Add(newOption);
