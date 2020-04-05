@@ -4,14 +4,16 @@ using EasyQuizApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EasyQuizApi.Data.Migrations
 {
     [DbContext(typeof(EasyQuizDbContext))]
-    partial class EasyQuizDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200405155636_SuaDataBase")]
+    partial class SuaDataBase
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -74,10 +76,6 @@ namespace EasyQuizApi.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("GhiChu");
-
-                    b.Property<int>("KieuDanTrang");
 
                     b.Property<int>("KyThiId");
 

@@ -12,5 +12,7 @@ namespace EasyQuizApi.Data.RepositoryBase
         Task<List<ObjectReference>> GetListKiThi();
         Task<List<ObjectReference>> GetListMonHoc(string filter);
         int CreateDeThi(DeThiNewDto data);
+        DeThiListResponseDto GetListDeThi(DeThiFilterDto data);
+        DeThiDetailDto GetDeThiDetail(int id);
     }
 }

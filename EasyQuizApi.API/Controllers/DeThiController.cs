@@ -14,7 +14,6 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
-using System.Linq.Expressions;
 
 namespace EasyQuizApi.API.Controllers
 {
@@ -70,6 +69,33 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpGet("getListDeThi")]
+        public IActionResult GetListDeThi([FromQuery] DeThiFilterDto filter)
+        {
+            try
+            {
+                var result = _deThiRepository.GetListDeThi(filter);
+                return Ok(result);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
+        [HttpGet("{id}")]
+        public IActionResult GetDetail(int id)
+        {
+            try
+            {
+                var result =  _deThiRepository.GetDeThiDetail(id);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
         
         [HttpGet("getListMonHoc")]
         public async Task<IActionResult> GetListMonHoc(string filter)
@@ -92,9 +118,8 @@ namespace EasyQuizApi.API.Controllers
             var vm = new DeThiNewDto();
             try
             {
-                if (data.SelectToken("lopHoc.id") == null || data.SelectToken("kyThi.id") == null ||
-                    data.SelectToken("monHoc.id") == null || data.SelectToken("thoiGian") == null ||
-                    data.SelectToken("cauHois") == null)
+                if ( data.SelectToken("kyThi.id") == null || data.SelectToken("cauHois") == null ||
+                    data.SelectToken("monHoc.id") == null || data.SelectToken("thoiGian") == null )
                 {
                     response.Success = false;
                     response.Message = "Dữ liệu không hợp lệ";
@@ -102,7 +127,7 @@ namespace EasyQuizApi.API.Controllers
                 }
 
                 vm = MappingDeThiDto(data);
-                int createdId = this._deThiRepository.CreateDeThi(vm);
+                int createdId = _deThiRepository.CreateDeThi(vm);
                 if (createdId > 0)
                 {
                     response.Success = true;
@@ -116,7 +141,7 @@ namespace EasyQuizApi.API.Controllers
 
                 return Ok(response);
             }
-            catch
+            catch(Exception ex)
             {
                 return BadRequest();
             }
@@ -127,20 +152,23 @@ namespace EasyQuizApi.API.Controllers
             if (data == null) throw new ArgumentNullException(nameof(data));
             var vm = new DeThiNewDto();
             vm.Id = 0;
-            vm.LopId = data.SelectToken("lopHoc.id").Value<int>();
+            if (data.SelectToken("lopHoc.id") != null)
+            {
+                vm.LopId = data.SelectToken("lopHoc.id").Value<int>();
+            }
             vm.KyThiId = data.SelectToken("kyThi.id").Value<int>();
             vm.MonHocId = data.SelectToken("monHoc.id").Value<int>();
-            vm.LopId = data.SelectToken("lopHoc.id").Value<int>();
             vm.SoCau = data.SelectToken("soCau").Value<int>();
             vm.ThoiGian = data.SelectToken("thoiGian").Value<int>();
             vm.Status = Status.GuiDuyet;
             vm.NgayThi = data.SelectToken("ngayThi").Value<DateTime>();
             vm.GiaoVienId = 1;
             vm.SoLuongDeTuSinh = data.SelectToken("soLuongDe").Value<int>();
+            vm.GhiChu = data.SelectToken("ghiChu").Value<string>();
             vm.CauHois =
                 JsonConvert.DeserializeObject<List<QuestionListItemDto>>(data.SelectToken("cauHois").ToString());
             vm.KieuDanTrang = data.SelectToken("kieuDanTrang") != null
-                ? data.SelectToken("kieuDanTrang").Value<KieuDanTrang>()
+                ? (KieuDanTrang)Enum.ToObject(typeof(KieuDanTrang) , data.SelectToken("kieuDanTrang").Value<int>())
                 : KieuDanTrang.FullPage;
             return vm;
         }
@@ -151,13 +179,16 @@ namespace EasyQuizApi.API.Controllers
             try
             {
                 var vm = new DeThiPdfDto();
-                vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+                if (data.SelectToken("lopHoc.value") != null)
+                {
+                    vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
+                }
                 vm.HocPhan = data.SelectToken("monHoc.value").Value<string>();
-                vm.LopThi = data.SelectToken("lopHoc.value").Value<string>();
                 vm.ThoiGianThi = data.SelectToken("thoiGian").Value<int>();
+                vm.SoDe = data.SelectToken("soDe") !=  null ? data.SelectToken("soDe").Value<int>(): 1;
                 var ngayThi = data.SelectToken("ngayThi").Value<DateTime>();
                 vm.NgayThi = ngayThi;
-                vm.KyThi = data.SelectToken("kyThi.value").Value<string>() + ", "  + ngayThi.Year.ToString();
+                vm.KyThi = data.SelectToken("kyThi.value").Value<string>() + ", "  + ngayThi.Year;
                 vm.CauHois =
                     JsonConvert.DeserializeObject<List<QuestionListItemDto>>(data.SelectToken("cauHois").ToString());
                 vm.KieuDanTrang = data.SelectToken("kieuDanTrang") != null
@@ -187,7 +218,7 @@ namespace EasyQuizApi.API.Controllers
             pdfDoc.Add(headerTable);
 
             // ===================== Section 2: Đáp án ========================================= 
-            CreateDapAnSection(pdfDoc, data.CauHois.Count);
+            CreateDapAnSection(pdfDoc, data.CauHois, data.IsContainDapAn);
 
             // =================== Body ======================================
             CreateDeThiBody(pdfDoc, data.CauHois, data.KieuDanTrang, data.IsContainDapAn);
@@ -200,7 +231,7 @@ namespace EasyQuizApi.API.Controllers
             PdfPTable headertable = new PdfPTable(3);
             headertable.HorizontalAlignment = 0;
             headertable.WidthPercentage = 100;
-            headertable.SetWidths(new float[] { 100f, 320f, 100f });
+            headertable.SetWidths(new [] { 100f, 320f, 100f });
             headertable.DefaultCell.Border = Rectangle.BOX;
 
             {
@@ -214,7 +245,7 @@ namespace EasyQuizApi.API.Controllers
                 PdfPTable tableInfo = new PdfPTable(4);
                 tableInfo.HorizontalAlignment = 0;
                 tableInfo.WidthPercentage = 100;
-                tableInfo.SetWidths(new float[] { 100f, 275f, 100f, 175f });
+                tableInfo.SetWidths(new[] { 100f, 275f, 100f, 175f });
                 headertable.DefaultCell.Border = Rectangle.NO_BORDER;
 
                 PdfPCell cell11 = new PdfPCell(new Phrase("Học phần:", _generalFont));
@@ -223,7 +254,15 @@ namespace EasyQuizApi.API.Controllers
                 PdfPCell cell14 = new PdfPCell(new Phrase(vm.KyThi, _generalFont));
  
                 PdfPCell cell21 = new PdfPCell(new Phrase("Lớp thi:", _generalFont));
-                PdfPCell cell22 = new PdfPCell(new Phrase("...................................................", _generalFont));
+                PdfPCell cell22;
+                if (!string.IsNullOrEmpty(vm.LopThi))
+                {
+                    cell22 = new PdfPCell(new Phrase(vm.LopThi, _generalFont));
+                }
+                else
+                {
+                    cell22 = new PdfPCell(new Phrase("...................................................", _generalFont));
+                }
                 PdfPCell cell23 = new PdfPCell(new Phrase("MSSV:", _generalFont));
                 PdfPCell cell24 = new PdfPCell(new Phrase(".............................", _generalFont));
                 PdfPCell cell31 = new PdfPCell(new Phrase("Họ và tên:", _generalFont));
@@ -248,7 +287,7 @@ namespace EasyQuizApi.API.Controllers
             }
 
             {
-                PdfPCell lastColumn = new PdfPCell(new Phrase("Mã đề thi\n\n 3", _generalFont));
+                PdfPCell lastColumn = new PdfPCell(new Phrase($"Mã đề thi\n\n {vm.SoDe}", _generalFont));
                 lastColumn.VerticalAlignment = Element.ALIGN_TOP;
                 lastColumn.HorizontalAlignment = Element.ALIGN_CENTER;
                 headertable.AddCell(lastColumn);
@@ -299,7 +338,7 @@ namespace EasyQuizApi.API.Controllers
             return headertable;
         }
         
-         private void CreateDapAnSection(Document pdfDoc, int soCauHoi)
+         private void CreateDapAnSection(Document pdfDoc, List<QuestionListItemDto> data, bool isContainDapAn)
         {
             PdfPTable dapAnSection = new PdfPTable(1);
             dapAnSection.WidthPercentage = 100;
@@ -316,7 +355,9 @@ namespace EasyQuizApi.API.Controllers
 
             // =========  Grid đáp án ===========================================
             PdfPTable dapAnGridTable = new PdfPTable(16);
+            int soCauHoi = data.Count;
             int rows = (int)Math.Ceiling(soCauHoi * 1f / 16);
+            var dapAnKeyMap = new[] {"A", "B", "C", "D"};
             for (int i = 0; i < rows; i++)
             {
                 PdfPCell cell;
@@ -351,8 +392,24 @@ namespace EasyQuizApi.API.Controllers
                     }
                     else
                     {
-                        cell = new PdfPCell();
+                        var dapAnKey = string.Empty;
+                        var index = (i * 15) + k -1;
+                        if (isContainDapAn && index < soCauHoi)
+                        {
+                            var listDapAn = data[index].Options;
+                            for (int keyIndex = 0; keyIndex < 4; keyIndex++)
+                            {
+                                if (listDapAn[keyIndex].IsDapAn)
+                                {
+                                    dapAnKey = dapAnKeyMap[keyIndex];
+                                    break;
+                                }
+                            }
+                        }
+                        cell = new PdfPCell(new Phrase(dapAnKey, _generalFontBold));
                         cell.FixedHeight = 25f;
+                        cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                        cell.VerticalAlignment = Element.ALIGN_MIDDLE;
                     }
                     cell.HorizontalAlignment = Element.ALIGN_CENTER;
                     cell.VerticalAlignment = Element.ALIGN_MIDDLE;

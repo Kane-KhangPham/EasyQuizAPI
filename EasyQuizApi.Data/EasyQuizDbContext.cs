@@ -15,7 +15,6 @@ namespace EasyQuizApi.Data
         public DbSet<CauHoi> CauHois { get; set; }
         public DbSet<De> Des { get; set; }
         public DbSet<DeCauHoi> DeCauHois { get; set; }
-        public DbSet<DeThi> DeThis { get; set; }
         public DbSet<GiaoVien> GiaoViens { get; set; }
         public DbSet<GiaoVienMonHoc> GiaoVienMonHocs { get; set; }
         public DbSet<KyThi> KiThis { get; set; }
@@ -77,7 +76,16 @@ namespace EasyQuizApi.Data
                 .HasOne(o => o.CauHoi)
                 .WithMany(q => q.Options)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            
+            modelBuilder.Entity<De>()
+                .HasMany(x  => x.DeCauHois)
+                .WithOne(d => d.De)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            modelBuilder.Entity<De>()
+                .HasMany(x  => x.SoanDes)
+                .WithOne(d => d.De)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
