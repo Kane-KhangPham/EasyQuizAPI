@@ -146,12 +146,57 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
+        
+        [HttpPost("updateDeThi")]
+        public IActionResult UpdateDethi([FromBody]JObject data)
+        {
+            var response = new ResponseBase();
+            var vm = new DeThiNewDto();
+            try
+            {
+                if ( data.SelectToken("kyThi.id") == null || data.SelectToken("cauHois") == null ||
+                     data.SelectToken("monHoc.id") == null || data.SelectToken("thoiGian") == null )
+                {
+                    response.Success = false;
+                    response.Message = "Dữ liệu không hợp lệ";
+                    return Ok(response);
+                }
+
+                vm = MappingDeThiDto(data);
+                int status = _deThiRepository.UpdateDeThi(vm);
+                if (status == 1)
+                {
+                    response.Success = true;
+                    response.Message = "Tạo mới thành công";
+                }
+                else if(status == -2)
+                {
+                    response.Success = false;
+                    response.Message = $"Đẫ tồn tại đề thi này, không thể cập nhật!";
+                } else if (status == -1)
+                {
+                    response.Success = false;
+                    response.Message = $"Không tìm thấy đề thi tương ứng";
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = $"Cập nhật thất bại!";
+                }
+
+                return Ok(response);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
+            }
+        }
 
         private DeThiNewDto MappingDeThiDto(JObject data)
         {
             if (data == null) throw new ArgumentNullException(nameof(data));
             var vm = new DeThiNewDto();
-            vm.Id = 0;
+            vm.Id = data.SelectToken("id") != null ? data.SelectToken("id").Value<int>() : 0;
             if (data.SelectToken("lopHoc.id") != null)
             {
                 vm.LopId = data.SelectToken("lopHoc.id").Value<int>();

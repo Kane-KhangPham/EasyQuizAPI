@@ -280,7 +280,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 catch (Exception ex)
                 {
                     transaction.Rollback();
-                    return -1;
+                    return 0;
                 }
             }
         }

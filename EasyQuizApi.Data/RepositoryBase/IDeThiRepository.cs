@@ -14,5 +14,6 @@ namespace EasyQuizApi.Data.RepositoryBase
         int CreateDeThi(DeThiNewDto data);
         DeThiListResponseDto GetListDeThi(DeThiFilterDto data);
         DeThiDetailDto GetDeThiDetail(int id);
+        int UpdateDeThi(DeThiNewDto data);
     }
 }
