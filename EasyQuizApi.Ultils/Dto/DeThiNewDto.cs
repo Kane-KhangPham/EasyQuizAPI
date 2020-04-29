@@ -49,5 +49,6 @@ namespace EasyQuizApi.Share.Dto
         public List<QuestionListItemDto> CauHoi { get; set; }
         public string GhiChu { get; set; }
         public int KieuDanTrang { get; set; }
+        public int SoDe { get; set; }
     }
 }

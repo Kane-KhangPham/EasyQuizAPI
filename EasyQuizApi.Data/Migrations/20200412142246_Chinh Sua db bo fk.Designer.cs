@@ -4,14 +4,16 @@ using EasyQuizApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EasyQuizApi.Data.Migrations
 {
     [DbContext(typeof(EasyQuizDbContext))]
-    partial class EasyQuizDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200412142246_Chinh Sua db bo fk")]
+    partial class ChinhSuadbbofk
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,8 +131,6 @@ namespace EasyQuizApi.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("KhoaId");
-
                     b.Property<string>("Name");
 
                     b.HasKey("Id");
@@ -149,19 +149,6 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasIndex("GiaoVienId");
 
                     b.ToTable("GiaoVienMonHocs");
-                });
-
-            modelBuilder.Entity("EasyQuizApi.Model.Entities.Khoa", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Khoas");
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.KyThi", b =>
@@ -261,12 +248,12 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasOne("EasyQuizApi.Model.Entities.GiaoVien", "GiaoVien")
                         .WithOne("Account")
                         .HasForeignKey("EasyQuizApi.Model.Entities.Account", "GiaoVienId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyQuizApi.Model.Entities.Role", "Role")
                         .WithMany("Accounts")
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.CauHoi", b =>
@@ -274,12 +261,12 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasOne("EasyQuizApi.Model.Entities.GiaoVien", "GiaoVien")
                         .WithMany()
                         .HasForeignKey("GiaoVienId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyQuizApi.Model.Entities.MonHoc", "MonHoc")
                         .WithMany("DsCauHoi")
                         .HasForeignKey("MonHocId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.De", b =>
@@ -287,17 +274,17 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasOne("EasyQuizApi.Model.Entities.KyThi", "KyThi")
                         .WithMany()
                         .HasForeignKey("KyThiId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyQuizApi.Model.Entities.Lop", "Lop")
                         .WithMany()
                         .HasForeignKey("LopId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyQuizApi.Model.Entities.MonHoc", "MonHoc")
                         .WithMany()
                         .HasForeignKey("MonHocId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.GiaoVienMonHoc", b =>
@@ -305,12 +292,12 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasOne("EasyQuizApi.Model.Entities.GiaoVien", "GiaoVien")
                         .WithMany("GiaoVienMonHocs")
                         .HasForeignKey("GiaoVienId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("EasyQuizApi.Model.Entities.MonHoc", "MonHoc")
                         .WithMany("GiaoVienMonHocs")
                         .HasForeignKey("MonHocId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 
             modelBuilder.Entity("EasyQuizApi.Model.Entities.Option", b =>
@@ -331,7 +318,7 @@ namespace EasyQuizApi.Data.Migrations
                     b.HasOne("EasyQuizApi.Model.Entities.GiaoVien", "GiaoVien")
                         .WithMany("SoanDes")
                         .HasForeignKey("GiaoVienId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Restrict);
                 });
 #pragma warning restore 612, 618
         }

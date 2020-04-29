@@ -54,6 +54,10 @@
           <e p="20200405155636_SuaDataBase.Designer.cs" t="Include" />
           <e p="20200405175412_SuaDataBase1.cs" t="Include" />
           <e p="20200405175412_SuaDataBase1.Designer.cs" t="Include" />
+          <e p="20200412142246_Chinh Sua db bo fk.cs" t="Include" />
+          <e p="20200412142246_Chinh Sua db bo fk.Designer.cs" t="Include" />
+          <e p="20200424081829_Add Table Khoa.cs" t="Include" />
+          <e p="20200424081829_Add Table Khoa.Designer.cs" t="Include" />
           <e p="EasyQuizDbContextModelSnapshot.cs" t="Include" />
         </e>
         <e p="obj" t="ExcludeRecursive">
@@ -84,6 +88,7 @@
           <e p="DeCauHoi.cs" t="Include" />
           <e p="GiaoVien.cs" t="Include" />
           <e p="GiaoVienMonHoc.cs" t="Include" />
+          <e p="Khoa.cs" t="Include" />
           <e p="KyThi.cs" t="Include" />
           <e p="Lop.cs" t="Include" />
           <e p="MonHoc.cs" t="Include" />
@@ -106,10 +111,14 @@
         <e p="AppSettings.cs" t="Include" />
         <e p="bin" t="ExcludeRecursive" />
         <e p="Dto" t="Include">
+          <e p="AccountCreateDto.cs" t="Include" />
+          <e p="ChangePasswordDto.cs" t="Include" />
           <e p="DeThiFilterDto.cs" t="Include" />
           <e p="DeThiListDto.cs" t="Include" />
           <e p="DeThiNewDto.cs" t="Include" />
+          <e p="GiaoVienDto.cs" t="Include" />
           <e p="ListQuestionPageDto.cs" t="Include" />
+          <e p="MonHocDto.cs" t="Include" />
           <e p="ObjectReference.cs" t="Include" />
           <e p="OptionDto.cs" t="Include" />
           <e p="OptionEditDto.cs" t="Include" />

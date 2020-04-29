@@ -54,9 +54,26 @@ namespace EasyQuizApi.Data.RepositoryImplement
             var userResponse = new UserLoginResponse();
             var token = tokenHandler.CreateToken(tokenDescriptor);
             userResponse.Id = user.Id;
+            userResponse.AccountName = user.AccountName;
             userResponse.FullName = user.GiaoVien != null ? user.GiaoVien.Name : "";
             userResponse.Token = tokenHandler.WriteToken(token);
             return userResponse;
+        }
+
+        public bool ChangePassword(ChangePasswordDto data)
+        {
+            data.NewPass = PasswordHelper.HashPassword(data.NewPass);
+            var account = _dbContext.Accounts.FirstOrDefault(acc =>
+                acc.AccountName == data.AccountName && acc.Password == PasswordHelper.HashPassword(data.OldPass));
+            if (account != null)
+            {
+                account.Password = data.NewPass;
+                _dbContext.Accounts.Update(account);
+                _dbContext.SaveChanges();
+                return true;
+            }
+
+            return false;
         }
     }
 }

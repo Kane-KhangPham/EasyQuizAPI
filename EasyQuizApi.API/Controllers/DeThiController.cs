@@ -14,9 +14,11 @@ using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace EasyQuizApi.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DeThiController : ControllerBase
@@ -131,12 +133,12 @@ namespace EasyQuizApi.API.Controllers
                 if (createdId > 0)
                 {
                     response.Success = true;
-                    response.Message = "Tạo mới thành công";
+                    response.Message = "Tạo đề thi thành công";
                 }
                 else
                 {
                     response.Success = false;
-                    response.Message = "Tạo mới đề thi thất bại";
+                    response.Message = "Tạo đề thi thất bại";
                 }
 
                 return Ok(response);
@@ -154,8 +156,7 @@ namespace EasyQuizApi.API.Controllers
             var vm = new DeThiNewDto();
             try
             {
-                if ( data.SelectToken("kyThi.id") == null || data.SelectToken("cauHois") == null ||
-                     data.SelectToken("monHoc.id") == null || data.SelectToken("thoiGian") == null )
+                if ( data.SelectToken("kyThi.id") == null || data.SelectToken("cauHois") == null || data.SelectToken("thoiGian") == null )
                 {
                     response.Success = false;
                     response.Message = "Dữ liệu không hợp lệ";
@@ -167,16 +168,16 @@ namespace EasyQuizApi.API.Controllers
                 if (status == 1)
                 {
                     response.Success = true;
-                    response.Message = "Tạo mới thành công";
+                    response.Message = "Cập nhật thành công!";
                 }
                 else if(status == -2)
                 {
                     response.Success = false;
-                    response.Message = $"Đẫ tồn tại đề thi này, không thể cập nhật!";
+                    response.Message = "Đẫ tồn tại đề thi này, không thể cập nhật!";
                 } else if (status == -1)
                 {
                     response.Success = false;
-                    response.Message = $"Không tìm thấy đề thi tương ứng";
+                    response.Message = "Không tìm thấy đề thi tương ứng";
                 }
                 else
                 {

@@ -15,6 +15,5 @@ namespace EasyQuizApi.Model.Entities
         public GiaoVien GiaoVien { get; set; }
         public MonHoc MonHoc { get; set; }
         public ICollection<Option> Options { get; set; }
-        public ICollection<DeCauHoi> DeCauHois { get; set; }
     }
 }

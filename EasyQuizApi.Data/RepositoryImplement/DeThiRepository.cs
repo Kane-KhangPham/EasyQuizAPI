@@ -2,6 +2,7 @@
 using EasyQuizApi.Share.Dto;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using EasyQuizApi.Model.Entities;
@@ -13,10 +14,12 @@ namespace EasyQuizApi.Data.RepositoryImplement
     public class DeThiRepository : IDeThiRepository
     {
         private readonly EasyQuizDbContext _dbContext;
+
         public DeThiRepository(EasyQuizDbContext dbContext)
         {
             _dbContext = dbContext;
         }
+
         public Task<List<ObjectReference>> GetListKiThi()
         {
             var data = _dbContext.KiThis.Select(x => new ObjectReference()
@@ -80,6 +83,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         Value = de.Lop.Name
                     };
                 }
+
                 result.KyThi = new ObjectReference()
                 {
                     Id = de.KyThiId,
@@ -94,20 +98,26 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 result.ThoiGian = de.ThoiGian;
                 result.SoCau = de.SoCau;
                 result.GhiChu = de.GhiChu;
+                result.SoDe = de.SoDe;
                 result.KieuDanTrang = de.KieuDanTrang;
                 result.SoLuongDe = _dbContext.Des.Count(x => x.RootDeId == id) + 1;
-                result.CauHoi = _dbContext.DeCauHois.Where(x => x.DeId == id).Select(d => new QuestionListItemDto()
-                {
-                    Id = d.CauHoiId,
-                    Content = d.CauHoi.Content,
-                    MonHoc = d.CauHoi.MonHoc.Name,
-                    Options = d.CauHoi.Options.Select(option => new OptionDto()
-                    {
-                        Id = option.Id,
-                        Content = option.Content,
-                        IsDapAn = option.IsAnswer
-                    }).ToList()
-                }).ToList();
+                var cauHois = _dbContext.CauHois;
+                result.CauHoi = _dbContext.DeCauHois.Where(x => x.DeId == id)
+                    .Join(cauHois, deCauHoi => deCauHoi.CauHoiId,
+                        cauHoi => cauHoi.Id,
+                        (deCauHoi, cauHoi) => new QuestionListItemDto()
+                        {
+                            Id = deCauHoi.CauHoiId,
+                            Content = cauHoi.Content,
+                            MonHoc = de.MonHoc.Name,
+                            SortTmp = deCauHoi.Id,
+                            Options = cauHoi.Options.Select(option => new OptionDto()
+                            {
+                                Id = option.Id,
+                                Content = option.Content,
+                                IsDapAn = option.IsAnswer
+                            }).ToList()
+                        }).OrderBy(a => a.SortTmp).ToList();
             }
 
             return result;
@@ -127,12 +137,13 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 LopId = data.LopId,
                 SoDe = data.SoDe.HasValue ? data.SoDe.Value : 1,
                 GhiChu = data.GhiChu,
-                KieuDanTrang = (int)data.KieuDanTrang
+                KieuDanTrang = (int) data.KieuDanTrang
             };
             if (rootId > 0)
             {
                 de.RootDeId = rootId;
             }
+
             _dbContext.Des.Add(de);
             _dbContext.SaveChanges();
             var createdId = de.Id;
@@ -160,16 +171,17 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         _dbContext.DeCauHois.Add(deCauHoi);
                     });
                 }
+
                 _dbContext.SaveChanges();
             }
 
             return createdId;
         }
-        
+
         public int CreateDeThi(DeThiNewDto data)
         {
-            using (var transaction = _dbContext.Database.BeginTransaction())  
-            { 
+            using (var transaction = _dbContext.Database.BeginTransaction())
+            {
                 try
                 {
                     bool flag = true;
@@ -198,6 +210,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         transaction.Rollback();
                         return -1;
                     }
+
                     transaction.Commit();
                     return 1;
                 }
@@ -208,20 +221,21 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 }
             }
         }
+
         public int UpdateDeThi(DeThiNewDto data)
         {
-            using (var transaction = _dbContext.Database.BeginTransaction())  
+            using (var transaction = _dbContext.Database.BeginTransaction())
             {
                 try
                 {
                     var de = _dbContext.Des.Find(data.Id);
                     if (de == null)
                     {
-                        return -1;  // khoong tim thay id
+                        return -1; // khoong tim thay id
                     }
 
                     var isDuplicate = _dbContext.Des.FirstOrDefault(x =>
-                        x.Id != data.Id && x.KyThiId == data.KyThiId && x.MonHocId == data.MonHocId &&
+                        x.Id != data.Id && x.RootDeId != data.Id  && x.RootDeId != null && x.KyThiId == data.KyThiId && x.MonHocId == data.MonHocId &&
                         x.LopId.HasValue && x.LopId.HasValue && x.LopId == data.LopId);
 
                     if (isDuplicate != null)
@@ -241,13 +255,14 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     // de.SoDe = data.SoDe.HasValue ? data.SoDe.Value : 1;     ---- không update trường này
                     de.GhiChu = data.GhiChu;
                     de.KieuDanTrang = (int) data.KieuDanTrang;
-                    
+
                     _dbContext.SaveChanges();
-                    
+
                     // them de cau hoi
                     if (data.CauHois != null && data.CauHois.Count > 0)
                     {
-                        var oldListQuestion = _dbContext.DeCauHois.Where(x => x.DeId == data.Id).Select(x => x.CauHoiId).ToList();
+                        var oldListQuestion = _dbContext.DeCauHois.Where(x => x.DeId == data.Id).Select(x => x.CauHoiId)
+                            .ToList();
                         var newListQuestion = data.CauHois.Select(x => x.Id).ToList();
                         var listSame = new List<int>();
                         oldListQuestion.ForEach(x =>
@@ -259,7 +274,8 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         });
                         oldListQuestion.RemoveAll(i => listSame.IndexOf(i) >= 0);
                         newListQuestion.RemoveAll(i => listSame.IndexOf(i) >= 0);
-                        var listRemoveEntity = _dbContext.DeCauHois.Where(x => x.DeId == data.Id && oldListQuestion.IndexOf(x.CauHoiId) >= 0).ToList();
+                        var listRemoveEntity = _dbContext.DeCauHois
+                            .Where(x => x.DeId == data.Id && oldListQuestion.IndexOf(x.CauHoiId) >= 0).ToList();
                         listRemoveEntity.ForEach(x => { _dbContext.DeCauHois.Remove(x); });
                         _dbContext.SaveChanges();
                         newListQuestion.ForEach(x =>
@@ -296,17 +312,20 @@ namespace EasyQuizApi.Data.RepositoryImplement
 
             if (data.KyThiId > 0)
             {
-                query = query.Where(x => x.KyThiId == data.KyThiId && x.NgayThi.Year == data.NamKyThi);
+                query = query.Where(x => x.KyThiId == data.KyThiId);
             }
+
             if (data.LopHocId > 0)
             {
                 query = query.Where(x => x.LopId == data.LopHocId);
             }
+
             result.TotalRow = query.Count();
             result.Data = query.Skip((data.Page - 1) * data.PageSize).Take(data.PageSize).Select(x =>
-                new DeThiListDto(){
+                new DeThiListDto()
+                {
                     DeThiId = x.Id,
-                    KyThi = $"{x.KyThi.Name}, {x.NgayThi.Year}",
+                    KyThi = $"{x.KyThi.Name}, {x.NgayThi.ToString("dd/M/yyyy", CultureInfo.InvariantCulture)}",
                     LopThi = x.Lop.Name,
                     MonHoc = x.MonHoc.Name,
                     SoDe = x.SoDe.ToString(),

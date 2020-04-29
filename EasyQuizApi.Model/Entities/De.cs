@@ -25,6 +25,5 @@ namespace EasyQuizApi.Model.Entities
         public virtual KyThi KyThi { get; set; }
         public virtual MonHoc MonHoc { get; set; }
         public virtual ICollection<SoanDe> SoanDes { get; set; }
-        public virtual ICollection<DeCauHoi> DeCauHois { get; set; }
     }
 }

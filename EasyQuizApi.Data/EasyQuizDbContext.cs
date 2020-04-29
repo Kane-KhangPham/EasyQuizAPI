@@ -24,27 +24,18 @@ namespace EasyQuizApi.Data
         public DbSet<SoanDe> SoanDes { get; set; }
 
         public DbSet<Lop> Lops { get; set; }
+        public DbSet<Khoa> Khoas { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
             {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+                relationship.DeleteBehavior = DeleteBehavior.Cascade;
             }
-
+            
             modelBuilder.Entity<DeCauHoi>()
-                .HasKey(d => new { d.CauHoiId, d.DeId });
-
-            modelBuilder.Entity<DeCauHoi>()
-                .HasOne(d => d.CauHoi)
-                .WithMany(c => c.DeCauHois)
-                .HasForeignKey(d => d.CauHoiId);
-
-            modelBuilder.Entity<DeCauHoi>()
-                .HasOne(d => d.De)
-                .WithMany(c => c.DeCauHois)
-                .HasForeignKey(d => d.DeId);
+                .HasKey(d => new { d.Id });
 
             modelBuilder.Entity<SoanDe>()
                .HasKey(d => new { d.DeId, d.GiaoVienId });
@@ -75,11 +66,6 @@ namespace EasyQuizApi.Data
             modelBuilder.Entity<Option>()
                 .HasOne(o => o.CauHoi)
                 .WithMany(q => q.Options)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            modelBuilder.Entity<De>()
-                .HasMany(x  => x.DeCauHois)
-                .WithOne(d => d.De)
                 .OnDelete(DeleteBehavior.Cascade);
             
             modelBuilder.Entity<De>()

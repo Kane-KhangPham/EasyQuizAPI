@@ -8,6 +8,7 @@ namespace EasyQuizApi.Model.Entities
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public int KhoaId { get; set; }
 
         public Account Account { get; set; }
         public ICollection<GiaoVienMonHoc> GiaoVienMonHocs { get; set; }
