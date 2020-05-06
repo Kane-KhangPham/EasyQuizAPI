@@ -13,10 +13,12 @@ namespace EasyQuizApi.Data.RepositoryImplement
     public class QuestionRepository : IQuestionRepository
     {
         private readonly EasyQuizDbContext _dbContext;
+
         public QuestionRepository(EasyQuizDbContext dbContext)
         {
             this._dbContext = dbContext;
         }
+
         public Task<int> CreateQuestion(QuestionCreateModel data)
         {
             var question = new CauHoi();
@@ -35,16 +37,18 @@ namespace EasyQuizApi.Data.RepositoryImplement
             {
                 return Task.FromResult(-1);
             }
+
             _dbContext.MonHocs.Add(monHoc);
             return _dbContext.SaveChangesAsync();
         }
-        
+
         public Task<QuestionListReponse> GetListQuestion(ListQuestionPageDto data)
         {
             var result = new QuestionListReponse();
             var monhocId = data.MonHoc.GetValueOrDefault();
             var keyword = string.IsNullOrEmpty(data.Keyword) ? string.Empty : data.Keyword;
-            var query = _dbContext.CauHois.Include(x => x.Options).Where(x => x.Content.Contains(keyword)).AsQueryable();
+            var query = _dbContext.CauHois.Include(x => x.Options).Where(x => x.Content.Contains(keyword))
+                .AsQueryable();
             if (monhocId > 0)
             {
                 query = query.Where(x => x.MonHocId == monhocId);
@@ -61,7 +65,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     {
                         Id = o.Id,
                         Content = o.Content,
-                        IsDapAn =  o. IsAnswer
+                        IsDapAn = o.IsAnswer
                     }).ToList()
                 }).ToList();
             return Task.FromResult(result);
@@ -82,7 +86,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 }).ToList();
             return Task.FromResult(result);
         }
-        
+
 
         public Task<List<SubjectLookupDto>> GetListSubjectLookup()
         {
@@ -129,7 +133,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
             {
                 return 0;
             }
-            
+
             _dbContext.Entry(monhoc).State = EntityState.Deleted;
             _dbContext.SaveChanges();
             return 1;
@@ -143,7 +147,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 question.Content = data.Question;
                 question.MonHocId = data.MonHocId;
                 _dbContext.CauHois.Update(question);
-                
+
                 //update đáp án
                 var options = _dbContext.Options.Where(x => x.CauHoiId == data.Id).ToList();
                 if (options.Count > 0)
@@ -151,7 +155,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     foreach (var option in data.Options)
                     {
                         var dbItemIndex = options.FindIndex(x => x.Id == option.Id);
-                        if (dbItemIndex !=  -1)
+                        if (dbItemIndex != -1)
                         {
                             var dbItem = options[dbItemIndex];
                             dbItem.Content = option.Value;
@@ -170,11 +174,12 @@ namespace EasyQuizApi.Data.RepositoryImplement
                         }
                     }
                 }
+
                 _dbContext.SaveChanges();
             }
         }
-        
-        
+
+
         public void EditMonHoc(MonHocDto data)
         {
             var monHoc = _dbContext.MonHocs.FirstOrDefault(item => item.Id == data.Id);
@@ -195,7 +200,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
             }).ToListAsync();
             return result;
         }
-        
+
         public async Task<GiaoVienListResponseDto> GetListGiaoVien(ListGiaoVienPageDto data)
         {
             var result = new GiaoVienListResponseDto();
@@ -218,7 +223,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 }).Skip((data.Page - 1) * data.PageSize).Take(data.PageSize).ToListAsync();
             return result;
         }
-        
+
         public Task<int> CreateGiaoVien(GiaoVienInsertDto data)
         {
             var giaoVien = new GiaoVien();
@@ -228,7 +233,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
             _dbContext.GiaoViens.Add(giaoVien);
             return _dbContext.SaveChangesAsync();
         }
-        
+
         public void EditGiaoVien(GiaoVienInsertDto data)
         {
             var giaoVien = _dbContext.GiaoViens.FirstOrDefault(item => item.Id == data.Id);
@@ -240,7 +245,7 @@ namespace EasyQuizApi.Data.RepositoryImplement
                 _dbContext.SaveChanges();
             }
         }
-        
+
         public int DeleteGiaoVien(int id)
         {
             var questionExist = _dbContext.GiaoVienMonHocs.FirstOrDefault(x => x.GiaoVienId == id);
@@ -270,12 +275,15 @@ namespace EasyQuizApi.Data.RepositoryImplement
             {
                 return 0;
             }
+
             // check trùng account
-            var isExist = _dbContext.Accounts.FirstOrDefault(x => x.AccountName.ToUpper().Equals(data.AccountName.ToUpper()));
+            var isExist =
+                _dbContext.Accounts.FirstOrDefault(x => x.AccountName.ToUpper().Equals(data.AccountName.ToUpper()));
             if (isExist != null)
             {
                 return -1;
             }
+
             _dbContext.Accounts.Add(account);
             _dbContext.SaveChanges();
             return 1;
@@ -296,6 +304,61 @@ namespace EasyQuizApi.Data.RepositoryImplement
                     GiaoVienName = x.GiaoVien.Name
                 }).ToList();
             return result;
+        }
+
+        public bool CheckExist(QuestionUploadDto data)
+        {
+            var item = _dbContext.CauHois.Include(x => x.Options).FirstOrDefault(x =>
+                x.Content.ToLower().Equals(data.Question.ToLower()) &&
+                x.MonHoc.Name.ToLower().Equals(data.MonHoc.ToLower()));
+            if (item == null)
+            {
+                return false;
+            }
+
+            var options = item.Options.ToList();
+            return options[0].Content.Trim().ToLower().Equals(data.OptionA.Trim().ToLower()) &&
+                   options[1].Content.Trim().ToLower().Equals(data.OptionB.Trim().ToLower()) &&
+                   options[2].Content.Trim().ToLower().Equals(data.OptionC.Trim().ToLower()) &&
+                   options[3].Content.Trim().ToLower().Equals(data.OptionD.Trim().ToLower());
+        }
+
+        public List<MonHocDto> GetAllMonHoc()
+        {
+            return _dbContext.MonHocs.Select(x => new MonHocDto()
+            {
+                Id = x.Id,
+                Name = x.Name
+            }).ToList();
+        }
+
+        public bool BulkInsertOrUpdate(List<QuestionUploadDto> data)
+        {
+            try
+            {
+                data.ForEach(question =>
+                {
+                    // create question
+                    var createData = new QuestionCreateModel();
+                    createData.Id = 0;
+                    createData.Question = question.Question;
+                    createData.OptionA = question.OptionA;
+                    createData.OptionB = question.OptionB;
+                    createData.OptionC = question.OptionC;
+                    createData.OptionD = question.OptionD;
+                    createData.DapAn = question.DapAn;
+                    createData.MonHocId = question.MonHocId;
+                    var q = new CauHoi();
+                    q.MappingData(createData);
+                    _dbContext.CauHois.Add(q);
+                });
+                _dbContext.SaveChanges();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

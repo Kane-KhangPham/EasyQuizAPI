@@ -24,5 +24,9 @@ namespace EasyQuizApi.Data.RepositoryBase
 
         Task<int> CreateAccount(AccountCreateDto data);
         Task<AccountListResponseDto> GetListAccount(ListAccountPageDto data);
+        bool CheckExist(QuestionUploadDto data);
+        List<MonHocDto> GetAllMonHoc();
+
+        bool BulkInsertOrUpdate(List<QuestionUploadDto> data);
     }
 }

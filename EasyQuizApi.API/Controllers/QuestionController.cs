@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using EasyQuizApi.Data.RepositoryBase;
 using EasyQuizApi.Share.Dto;
@@ -13,9 +15,11 @@ using iTextSharp.text;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using OfficeOpenXml;
 
 namespace EasyQuizApi.API.Controllers
 {
@@ -51,7 +55,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("createMonHoc")]
         public async Task<IActionResult> CreateMonHoc(MonHocDto data)
         {
@@ -65,7 +69,7 @@ namespace EasyQuizApi.API.Controllers
 
                 if (createdId == -1)
                 {
-                    return Ok(new { Message = "Đã tồn tại tên môn học: " + data.Name});
+                    return Ok(new {Message = "Đã tồn tại tên môn học: " + data.Name});
                 }
 
                 return Ok();
@@ -89,7 +93,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpGet("getListMonHoc")]
         public async Task<IActionResult> getListMonHoc([FromQuery] ListQuestionPageDto data)
         {
@@ -148,7 +152,7 @@ namespace EasyQuizApi.API.Controllers
 
             return Ok(result);
         }
-        
+
         [HttpDelete("deleteMonHoc/{monHocId}")]
         public async Task<IActionResult> DeleteMonHoc(int monHocId)
         {
@@ -193,7 +197,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("updateMonHoc")]
         public async Task<IActionResult> updateMonHoc(MonHocDto data)
         {
@@ -207,7 +211,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("updateGiaoVien")]
         public async Task<IActionResult> updateGiaoVien(GiaoVienInsertDto data)
         {
@@ -221,7 +225,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("createGiaoVien")]
         public async Task<IActionResult> createGiaoVien(GiaoVienInsertDto data)
         {
@@ -232,6 +236,7 @@ namespace EasyQuizApi.API.Controllers
                 {
                     return BadRequest();
                 }
+
                 return Ok();
             }
             catch (Exception ex)
@@ -239,7 +244,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpGet("getListGiaoVien")]
         public async Task<IActionResult> getListGiaoVien([FromQuery] ListGiaoVienPageDto data)
         {
@@ -253,7 +258,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpDelete("deleteGiaoVien/{id}")]
         public async Task<IActionResult> deleteGiaoVien(int id)
         {
@@ -284,6 +289,7 @@ namespace EasyQuizApi.API.Controllers
 
             return Ok(result);
         }
+
         [HttpGet("getListKhoa")]
         public async Task<IActionResult> GetListKhoa()
         {
@@ -308,6 +314,7 @@ namespace EasyQuizApi.API.Controllers
                 result.Success = false;
                 return Ok(result);
             }
+
             try
             {
                 string password = GenerateToken(6);
@@ -318,7 +325,7 @@ namespace EasyQuizApi.API.Controllers
                     result.Message = "Đã tồn tại tên tài khoản: " + data.AccountName;
                     result.Success = false;
                 }
-                else if(status == 1)
+                else if (status == 1)
                 {
                     result.Message = "Tạo tài khoản thành công!";
                     result.Success = true;
@@ -328,6 +335,7 @@ namespace EasyQuizApi.API.Controllers
                     result.Message = $"Đã tồn tại tài khoản cho giáo viên!";
                     result.Success = false;
                 }
+
                 SendEmailPasword(data.Email, data.AccountName, password);
             }
             catch
@@ -335,9 +343,10 @@ namespace EasyQuizApi.API.Controllers
                 result.Message = "Lỗi server";
                 result.Success = false;
             }
+
             return Ok(result);
         }
-        
+
         private string GenerateToken(int length)
         {
             using (RNGCryptoServiceProvider cryptRNG = new RNGCryptoServiceProvider())
@@ -347,9 +356,9 @@ namespace EasyQuizApi.API.Controllers
                 return Convert.ToBase64String(tokenBuffer);
             }
         }
-        
-        private async Task SendEmailPasword(string email, string account, string password){
-        
+
+        private async Task SendEmailPasword(string email, string account, string password)
+        {
             try
             {
                 // Credentials
@@ -359,7 +368,8 @@ namespace EasyQuizApi.API.Controllers
                 {
                     From = new MailAddress("khangpv96nd@gmail.com"),
                     Subject = "Thông tin mật khẩu",
-                    Body = $"Bạn đã được cấp tài khoản: <b>{account}</b> với mật khẩu: \n<b>{password}</b> \n Vui lòng đăng nhập và thay đổi mật khấu của bạn!"
+                    Body =
+                        $"Bạn đã được cấp tài khoản: <b>{account}</b> với mật khẩu: \n<b>{password}</b> \n Vui lòng đăng nhập và thay đổi mật khấu của bạn!"
                 };
                 mail.IsBodyHtml = true;
                 mail.To.Add(new MailAddress(email));
@@ -379,7 +389,7 @@ namespace EasyQuizApi.API.Controllers
             {
             }
         }
-        
+
         [HttpGet("getListAccount")]
         public async Task<IActionResult> GetLisAccout([FromQuery] ListAccountPageDto data)
         {
@@ -393,7 +403,7 @@ namespace EasyQuizApi.API.Controllers
                 return BadRequest();
             }
         }
-        
+
         [HttpPost("changePassword")]
         public async Task<IActionResult> ChangePassword(ChangePasswordDto data)
         {
@@ -407,6 +417,7 @@ namespace EasyQuizApi.API.Controllers
                     result.Message = "Dữ liệu không hợp lệ";
                     return Ok(result);
                 }
+
                 var isValidPassword = _userRepository.Authenticate(data.AccountName, data.OldPass);
                 if (isValidPassword == null)
                 {
@@ -430,13 +441,122 @@ namespace EasyQuizApi.API.Controllers
                     result.Success = false;
                     result.Message = "Thay đổi mật khẩu không thành công";
                 }
-               
             }
             catch
             {
                 return BadRequest();
             }
+
             return Ok(result);
+        }
+
+        [HttpPost("import")]
+        public async Task<IActionResult> Import(IFormFile formFile, CancellationToken cancellationToken)
+        {
+            try
+            {
+                int batchLength = 50;
+                if (formFile == null || formFile.Length <= 0)
+                {
+                    return Ok(new
+                    {
+                        error = new
+                        {
+                            message = "empty file upload"
+                        }
+                    });
+                }
+
+                if (!Path.GetExtension(formFile.FileName).Equals(".xlsx", StringComparison.OrdinalIgnoreCase))
+                {
+                    return Ok(new
+                    {
+                        error = new
+                        {
+                            message = "not support file extension"
+                        }
+                    });
+                }
+                
+                var listError = new List<QuestionUploadDto>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await formFile.CopyToAsync(stream, cancellationToken);
+
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.End.Row;
+                        var stt = 0;
+                        var listMonHoc = _questionRepository.GetAllMonHoc();
+                        while (stt * batchLength <= rowCount)
+                        {
+                            var list = new List<QuestionUploadDto>();
+                            int startRow = stt == 0 ? 2 : stt * batchLength;
+                            int endRow = stt * batchLength + batchLength <= rowCount
+                                ? stt * batchLength + batchLength
+                                : rowCount;
+                            for (int row = startRow; row <= endRow; row++)
+                            {
+                                var item = new QuestionUploadDto
+                                {
+                                    Question = worksheet.Cells[row, 1].Value.ToString().Trim(),
+                                    OptionA = worksheet.Cells[row, 2].Value.ToString().Trim(),
+                                    OptionB = worksheet.Cells[row, 3].Value.ToString().Trim(),
+                                    OptionC = worksheet.Cells[row, 4].Value.ToString().Trim(),
+                                    OptionD = worksheet.Cells[row, 5].Value.ToString().Trim(),
+                                    MonHoc = worksheet.Cells[row, 6].Value.ToString().Trim(),
+                                    DapAn = worksheet.Cells[row, 7].Value.ToString().Trim(),
+                                    MonHocId = fintMonHocId(listMonHoc, worksheet.Cells[row, 6].Value.ToString().Trim())
+                                };
+                                if (_questionRepository.CheckExist(item))
+                                {
+                                    listError.Add(item);
+                                }
+                                else
+                                {
+                                    list.Add(item);
+                                }
+                            }
+
+                            if (listError.Count == 0)
+                            {
+                                _questionRepository.BulkInsertOrUpdate(list);
+                            }
+                            stt++;
+                        }
+
+                        if (listError.Count > 0)
+                        {
+                            return Ok(new
+                            {
+                                error = new
+                                {
+                                    message = "Câu hỏi đã tồn tại!",
+                                    data = listError
+                                }
+                            });
+                        }
+
+                        return Ok(new
+                        {
+                            success = true,
+                            message = "upload thành công"
+                        });
+                    }
+                }
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        private int fintMonHocId(List<MonHocDto> list, string monhocName)
+        {
+            var item =  list.FirstOrDefault(x => x.Name.Trim().ToLower().Equals(monhocName.ToLower()));
+            return item?.Id ?? 0;
         }
     }
 }

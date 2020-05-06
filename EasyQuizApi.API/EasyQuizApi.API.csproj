@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="EPPlus" Version="4.5.2.1" />
     <PackageReference Include="itext7.font-asian" Version="7.1.10" />
     <PackageReference Include="iTextSharp-LGPL" Version="4.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
